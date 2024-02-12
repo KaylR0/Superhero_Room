@@ -7,7 +7,7 @@ plugins {
 
 android {
     namespace = "com.kaylr.superhero_room"
-    compileSdk = 33
+    compileSdk = 34
 
     defaultConfig {
         applicationId = "com.kaylr.superhero_room"
@@ -35,6 +35,9 @@ android {
     kotlinOptions {
         jvmTarget = "1.8"
     }
+    buildFeatures{
+        viewBinding = true   //Además, hay que darle a sincronizar
+    }
 }
 
 dependencies {
@@ -49,6 +52,8 @@ dependencies {
     // Retrofit
     implementation ("com.squareup.retrofit2:retrofit:2.9.0")
     implementation ("com.squareup.retrofit2:converter-gson:2.9.0")
+    //Picasso - Libreria para mostrar las imagenes
+    implementation("com.squareup.picasso:picasso:2.8")
     //Corrutinas
     implementation ("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.7.1")
     //Room
