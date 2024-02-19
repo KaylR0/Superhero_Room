@@ -7,6 +7,8 @@ import android.util.Log
 import androidx.appcompat.widget.SearchView
 import androidx.core.view.isVisible
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.room.Room
+import com.kaylr.superhero_room.bbdd.SuperheroDatabase
 import com.kaylr.superhero_room.databinding.ActivitySuperHeroBinding
 
 import kotlinx.coroutines.CoroutineScope
@@ -24,7 +26,7 @@ class SuperHeroActivity : AppCompatActivity() {
     private lateinit var binding: ActivitySuperHeroBinding
     private lateinit var retrofit: Retrofit
     private lateinit var adapter: SuperHeroAdapter
-
+    private lateinit var room: SuperheroDatabase
     private fun navigateToDetail(id: String) {
         val intent = Intent(this, DetailSuperHeroActivity::class.java)
         intent.putExtra(EXTRA_ID, id)
@@ -32,6 +34,12 @@ class SuperHeroActivity : AppCompatActivity() {
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        room = Room.databaseBuilder(this, SuperheroDatabase::class.java, "superheroes").build()
+      /*  val db = Room.databaseBuilder(
+            applicationContext,
+            SuperheroDatabase::class.java, "database-name"
+        ).build()*/
+
         super.onCreate(savedInstanceState)
         binding = ActivitySuperHeroBinding.inflate(layoutInflater)
         setContentView(binding.root)
@@ -62,7 +70,7 @@ class SuperHeroActivity : AppCompatActivity() {
         CoroutineScope(Dispatchers.IO).launch {
             //usamos corrutinas para que use otro hilo y que no se atasque el programa principal
             val myResponse: Response<SuperHeroDataResponse> =
-                retrofit.create(ApiService::class.java).getSuperheroes(query)
+                retrofit.create(ApiService::class.java).getSuperheroes()//(query)
             if (myResponse.isSuccessful) {
                 Log.i("Consulta", "Funciona :)")
                 val response: SuperHeroDataResponse? = myResponse.body()

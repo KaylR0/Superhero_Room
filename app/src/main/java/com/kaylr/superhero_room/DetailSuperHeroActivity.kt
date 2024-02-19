@@ -31,7 +31,7 @@ class DetailSuperHeroActivity : AppCompatActivity() {
     private fun getSuperheroInformation(id: String) {
         CoroutineScope(Dispatchers.IO).launch {
             val superheroDetail =
-                getRetrofit().create(ApiService::class.java).getSuperheroDetail(id)
+                getRetrofit().create(ApiService::class.java).getSuperheroDetail()//(id)
             if(superheroDetail.body() != null){
                 runOnUiThread{ createUI(superheroDetail.body()!!) }
                 //se pone !! cuando estamos seguros de que es nulo
@@ -39,9 +39,9 @@ class DetailSuperHeroActivity : AppCompatActivity() {
         }
     }
 
-    private fun createUI(superHero: SuperHeroDetailResponse){
-        Picasso.get().load(superHero.image.url).into(binding.ivSuperhero)
-        binding.tvSuperheroName.text = superHero.name
+    private fun createUI(superHero: SuperheroIdResponse){
+        //Picasso.get().load(superHero.image.url).into(binding.ivSuperhero)
+       // binding.tvSuperheroName.text = superHero.name
         binding.tvSuperheroRealName.text = superHero.biography.fullName
         binding.tvPublisher.text = superHero.biography.publisher
         prepareStats(superHero.powerstats)
