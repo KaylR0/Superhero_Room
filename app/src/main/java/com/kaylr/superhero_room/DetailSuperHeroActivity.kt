@@ -4,10 +4,12 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.TypedValue
 import android.view.View
+import androidx.room.Room
 import com.kaylr.superhero_room.R
 import com.kaylr.superhero_room.databinding.ActivityDetailSuperHeroBinding
 import com.kaylr.superhero_room.SuperHeroActivity.Companion.EXTRA_ID
 import com.kaylr.superhero_room.SuperHeroActivity.Companion.MY_TOKEN
+import com.kaylr.superhero_room.bbdd.SuperheroDatabase
 import com.squareup.picasso.Picasso
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -19,7 +21,11 @@ import kotlin.math.roundToInt
 
 class DetailSuperHeroActivity : AppCompatActivity() {
     private lateinit var binding: ActivityDetailSuperHeroBinding
+    private lateinit var room: SuperheroDatabase
     override fun onCreate(savedInstanceState: Bundle?) {
+        room = Room.databaseBuilder(this, SuperheroDatabase::class.java, "superheroes").build()
+        room.getDetailsDao()
+
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_detail_super_hero)
         binding = ActivityDetailSuperHeroBinding.inflate(layoutInflater)

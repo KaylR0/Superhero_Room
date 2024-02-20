@@ -8,7 +8,10 @@ import androidx.appcompat.widget.SearchView
 import androidx.core.view.isVisible
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.room.Room
+import com.kaylr.superhero_room.bbdd.HeroDao
+import com.kaylr.superhero_room.bbdd.HeroEntity
 import com.kaylr.superhero_room.bbdd.SuperheroDatabase
+import com.kaylr.superhero_room.bbdd.toDatabase
 import com.kaylr.superhero_room.databinding.ActivitySuperHeroBinding
 
 import kotlinx.coroutines.CoroutineScope
@@ -32,18 +35,14 @@ class SuperHeroActivity : AppCompatActivity() {
         intent.putExtra(EXTRA_ID, id)
         startActivity(intent)
     }
-
     override fun onCreate(savedInstanceState: Bundle?) {
         room = Room.databaseBuilder(this, SuperheroDatabase::class.java, "superheroes").build()
-      /*  val db = Room.databaseBuilder(
-            applicationContext,
-            SuperheroDatabase::class.java, "database-name"
-        ).build()*/
 
         super.onCreate(savedInstanceState)
         binding = ActivitySuperHeroBinding.inflate(layoutInflater)
         setContentView(binding.root)
         retrofit = getRetrofit()
+        fillDatabase()
         initUI()
     }
 
@@ -62,7 +61,7 @@ class SuperHeroActivity : AppCompatActivity() {
         binding.rvSuperHero.adapter = adapter
     }
 
-    private fun searchByName(query: String) {
+    private fun searchByName(query: String) {//query: String
         binding.progressBar.isVisible = true
 
         //.IO es para hilos secundarios
@@ -84,10 +83,34 @@ class SuperHeroActivity : AppCompatActivity() {
             } else {
                 Log.i("Consulta", "No funciona :(")
             }
-
-
         }
     }
+    private fun fillDatabase() {
+        binding.progressBar.isVisible = true
+
+        //.IO es para hilos secundarios
+        //.MAIN es para el hilo principal
+        CoroutineScope(Dispatchers.IO).launch {
+            //usamos corrutinas para que use otro hilo y que no se atasque el programa principal
+            val myResponse: Response<SuperHeroDataResponse> =
+                retrofit.create(ApiService::class.java).getSuperheroes()//(query)
+            if (myResponse.isSuccessful) {
+                Log.i("Consulta", "Funciona :)")
+                val response: SuperHeroDataResponse? = myResponse.body()
+                if (response != null) {
+                    Log.i("Cuerpo de la consulta", response.toString())
+
+                        val list = response.superheroes.map { it.toDatabase() }
+                        room.getHeroDao().insertAll(list)
+
+                        binding.progressBar.isVisible = false
+                }
+            } else {
+                Log.i("Consulta", "No funciona :(")
+            }
+        }
+    }
+
     private fun getRetrofit(): Retrofit {
         return Retrofit
             .Builder()
