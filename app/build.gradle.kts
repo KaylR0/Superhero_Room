@@ -2,7 +2,7 @@ plugins {
     id("com.android.application")
     id("org.jetbrains.kotlin.android")
     //kapt
-    id("kotlin-kapt")
+    id("kotlin-kapt") //permite a las librerias generar código
 }
 
 android {

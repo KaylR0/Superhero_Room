@@ -20,6 +20,7 @@ import kotlinx.coroutines.launch
 import retrofit2.Response
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
+import retrofit2.create
 
 class SuperHeroActivity : AppCompatActivity() {
     companion object {
@@ -36,9 +37,8 @@ class SuperHeroActivity : AppCompatActivity() {
         startActivity(intent)
     }
     override fun onCreate(savedInstanceState: Bundle?) {
-        room = Room.databaseBuilder(this, SuperheroDatabase::class.java, "superheroes").build()
-
         super.onCreate(savedInstanceState)
+        room = getRoom()
         binding = ActivitySuperHeroBinding.inflate(layoutInflater)
         setContentView(binding.root)
         retrofit = getRetrofit()
@@ -76,8 +76,8 @@ class SuperHeroActivity : AppCompatActivity() {
                 if (response != null) {
                     Log.i("Cuerpo de la consulta", response.toString())
                     runOnUiThread {
-                        adapter.updateList(response.superheroes)
-                        binding.progressBar.isVisible = false
+                        //adapter.updateList(response.superheroes)
+                        //binding.progressBar.isVisible = false
                     }
                 }
             } else {
@@ -99,11 +99,23 @@ class SuperHeroActivity : AppCompatActivity() {
                 val response: SuperHeroDataResponse? = myResponse.body()
                 if (response != null) {
                     Log.i("Cuerpo de la consulta", response.toString())
-
                         val list = response.superheroes.map { it.toDatabase() }
+                        room.getHeroDao().deleteAllSuperheroes()
                         room.getHeroDao().insertAll(list)
+                        room.getHeroDao().update(list)
 
+                       // if (room.getHeroDao().getAllSuperheroes().isEmpty()) {
+                        adapter.updateList(room.getHeroDao().getAllSuperheroes())
+
+
+                        /* val heroes = room.getHeroDao().getAllSuperheroes()
+                        for (i in heroes.indices) {
+                            println(heroes[i])
+                        }
+                        Log.i("BASE DE DATOS", room.getHeroDao().getSuperheroes(1).toString())*/
+                    runOnUiThread{
                         binding.progressBar.isVisible = false
+                    }
                 }
             } else {
                 Log.i("Consulta", "No funciona :(")
@@ -118,5 +130,9 @@ class SuperHeroActivity : AppCompatActivity() {
             .addConverterFactory(GsonConverterFactory.create())
             .build()
     }
-
+    private fun getRoom(): SuperheroDatabase{
+       return Room
+            .databaseBuilder(this, SuperheroDatabase::class.java, "superheroes")
+            .build()
+    }
 }

@@ -4,12 +4,13 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.kaylr.superhero_room.R
+import com.kaylr.superhero_room.bbdd.HeroEntity
 
-class SuperHeroAdapter( private var superheroList: List<SuperheroItemResponse> = emptyList(), private val navigateToDetailActivity: (String) -> Unit)
+class SuperHeroAdapter( private var superheroList: List<HeroEntity> = emptyList(), private val navigateToDetailActivity: (String) -> Unit)
     : RecyclerView.Adapter<SuperheroViewHolder>() {
-    fun updateList(list: List<SuperheroItemResponse>) {
-        superheroList = list
-        notifyDataSetChanged()
+    fun updateList(list: List<HeroEntity>) {
+        this.superheroList = list
+        //notifyDataSetChanged()
     }
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): SuperheroViewHolder {
         return SuperheroViewHolder(

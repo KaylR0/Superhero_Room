@@ -4,7 +4,9 @@ import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
+import androidx.room.Update
 
+//DAO - DATA ACCESS OBJECT
 @Dao
 interface HeroDao {
     @Query("SELECT * FROM hero_table")
@@ -15,6 +17,9 @@ interface HeroDao {
 
     @Query("SELECT * FROM hero_table WHERE id LIKE :id")
     suspend fun getSuperheroes(id:Int):List<HeroEntity>
+
+    @Update(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun update(heroList: List<HeroEntity>)
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertAll(superheroes:List<HeroEntity>)
